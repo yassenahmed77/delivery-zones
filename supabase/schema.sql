@@ -1,28 +1,27 @@
 -- ============================================================
--- Supabase SQL Schema for Delivery Zones Multi-Store Application
--- Run this in your Supabase SQL Editor
+-- Supabase SQL Schema for Delivery Zones (Multi-Store Edition)
+-- الآمن للتشغيل عدة مرات دون أي أخطاء (Idempotent)
 -- ============================================================
 
--- Enable UUID extension
+-- تفعيل ملحق الـ UUID
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. Stores Table (قائمة المحلات والروابط المخصصة)
+-- 1. جدول المحلات والروابط المخصصة
 CREATE TABLE IF NOT EXISTS stores (
   id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name         TEXT NOT NULL,
   slug         TEXT NOT NULL UNIQUE,
   phone        TEXT,
   notes        TEXT,
-  status       TEXT NOT NULL DEFAULT 'pending', -- 'pending' | 'submitted'
+  status       TEXT NOT NULL DEFAULT 'pending',
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   submitted_at TIMESTAMPTZ
 );
 
--- Index on slug for lightning-fast public link resolution
 CREATE INDEX IF NOT EXISTS stores_slug_idx ON stores (slug);
 CREATE INDEX IF NOT EXISTS stores_created_at_idx ON stores (created_at DESC);
 
--- 2. Submissions Table (بيانات التوصيل لكل محل)
+-- 2. جدول إرسالات التغطية
 CREATE TABLE IF NOT EXISTS submissions (
   id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   store_id          UUID REFERENCES stores(id) ON DELETE CASCADE,
@@ -34,27 +33,32 @@ CREATE TABLE IF NOT EXISTS submissions (
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Indexes for submissions
+-- التأكد من وجود أعمدة الربط في حال كان الجدول منشأ مسبقاً
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS store_id UUID REFERENCES stores(id) ON DELETE CASCADE;
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS store_slug TEXT;
+
 CREATE INDEX IF NOT EXISTS submissions_store_id_idx ON submissions (store_id);
 CREATE INDEX IF NOT EXISTS submissions_created_at_idx ON submissions (created_at DESC);
 
 -- ============================================================
--- Row Level Security (RLS) Policies
+-- تفعيل حماية Row Level Security (RLS)
 -- ============================================================
 
--- Enable RLS
 ALTER TABLE stores ENABLE ROW LEVEL SECURITY;
 ALTER TABLE submissions ENABLE ROW LEVEL SECURITY;
 
--- Stores policies
--- 1) Public can read basic store info to open their customized link
+-- ============================================================
+-- سياسات جدول المحلات (stores)
+-- ============================================================
+
+DROP POLICY IF EXISTS "Allow public read stores by slug" ON stores;
 CREATE POLICY "Allow public read stores by slug"
   ON stores
   FOR SELECT
   TO anon, authenticated
   USING (true);
 
--- 2) Admin full access to stores
+DROP POLICY IF EXISTS "Allow admin full access to stores" ON stores;
 CREATE POLICY "Allow admin full access to stores"
   ON stores
   FOR ALL
@@ -62,7 +66,7 @@ CREATE POLICY "Allow admin full access to stores"
   USING (true)
   WITH CHECK (true);
 
--- 3) Public can update store status to 'submitted' when completing the form
+DROP POLICY IF EXISTS "Allow public update store status" ON stores;
 CREATE POLICY "Allow public update store status"
   ON stores
   FOR UPDATE
@@ -70,22 +74,28 @@ CREATE POLICY "Allow public update store status"
   USING (true)
   WITH CHECK (true);
 
--- Submissions policies
--- 1) Public users can INSERT answers
+-- ============================================================
+-- سياسات جدول الإرسالات (submissions)
+-- ============================================================
+
+-- حذف السياسات القديمة إن وجدت لمنع خطأ 42710
+DROP POLICY IF EXISTS "Allow public insert" ON submissions;
+DROP POLICY IF EXISTS "Allow public insert submissions" ON submissions;
 CREATE POLICY "Allow public insert submissions"
   ON submissions
   FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
 
--- 2) Admin can read all submissions
+DROP POLICY IF EXISTS "Allow admin read" ON submissions;
+DROP POLICY IF EXISTS "Allow admin read submissions" ON submissions;
 CREATE POLICY "Allow admin read submissions"
   ON submissions
   FOR SELECT
   TO authenticated
   USING (true);
 
--- 3) Admin can delete submissions
+DROP POLICY IF EXISTS "Allow admin delete submissions" ON submissions;
 CREATE POLICY "Allow admin delete submissions"
   ON submissions
   FOR DELETE
