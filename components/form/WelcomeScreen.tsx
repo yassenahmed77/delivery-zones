@@ -1,6 +1,6 @@
 'use client'
 
-import { MapPin, Store, ShieldCheck, Clock, ArrowLeft, CheckCircle2, Lock } from 'lucide-react'
+import { Store, ArrowLeft, CheckCircle2, Lock } from 'lucide-react'
 
 interface WelcomeScreenProps {
   restaurantName: string
@@ -90,39 +90,6 @@ export default function WelcomeScreen({
             </div>
           )}
 
-          {/* Quick Features Highlight */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-              <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center shrink-0">
-                <MapPin className="w-4 h-4 text-sky-600" />
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-bold text-slate-800">تغطية ذكية</div>
-                <div className="text-[11px] text-slate-500">القاهرة والجيزة</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-              <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-bold text-slate-800">حفظ تلقائي</div>
-                <div className="text-[11px] text-slate-500">عدم فقدان البيانات</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-              <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
-                <Clock className="w-4 h-4 text-amber-600" />
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-bold text-slate-800">وقت التوصيل</div>
-                <div className="text-[11px] text-slate-500">تحديد مدة وسعر</div>
-              </div>
-            </div>
-          </div>
-
           {/* Instructions note */}
           <div className="flex items-start gap-3 p-4 rounded-2xl bg-sky-50/60 border border-sky-100 text-sky-900 text-xs leading-relaxed mb-6">
             <CheckCircle2 className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
@@ -136,15 +103,10 @@ export default function WelcomeScreen({
             onClick={onStart}
             className="w-full group bg-slate-900 hover:bg-sky-600 active:bg-sky-700 text-white font-bold py-4 px-6 rounded-2xl text-base transition-all duration-200 shadow-lg shadow-slate-900/10 hover:shadow-sky-500/25 flex items-center justify-center gap-3 cursor-pointer"
           >
-            <span>ابدأ المراجعة الآن</span>
+            <span>حدد الآن</span>
             <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
           </button>
         </div>
-
-        {/* Footer */}
-        <p className="text-center text-xs text-slate-400 mt-6">
-          جميع البيانات مشفرة وتُستخدم لضبط تسعير وتغطية أسطول التوصيل الخاص بكم.
-        </p>
       </div>
     </div>
   )
