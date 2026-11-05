@@ -42,6 +42,10 @@ export default function MainAreaStep({
   const isFirst = stepIndex === 0
   const isLast = stepIndex === totalSteps - 1
 
+  const isUnifiedArea =
+    answer.subareas.length === 1 && answer.subareas[0].subareaId.endsWith('-unified')
+  const unifiedSubarea = isUnifiedArea ? answer.subareas[0] : null
+
   // Batch fill states
   const [showBatchModal, setShowBatchModal] = useState(false)
   const [batchFee, setBatchFee] = useState('30')
@@ -57,7 +61,19 @@ export default function MainAreaStep({
       setCanProceed(true)
       return
     }
-    // General is YES -> every subarea must have deliveryAvailable !== null
+    // General is YES
+    if (isUnifiedArea && unifiedSubarea) {
+      const valid =
+        unifiedSubarea.deliveryAvailable === true &&
+        unifiedSubarea.deliveryFee !== undefined &&
+        unifiedSubarea.deliveryFee >= 0 &&
+        unifiedSubarea.estimatedTime !== undefined &&
+        unifiedSubarea.estimatedTime > 0
+      setCanProceed(valid)
+      return
+    }
+
+    // Every subarea must have deliveryAvailable !== null
     // If deliveryAvailable is true, deliveryFee >= 0 and estimatedTime > 0
     const allValid = answer.subareas.every((sa) => {
       if (sa.deliveryAvailable === null) return false
@@ -70,7 +86,7 @@ export default function MainAreaStep({
       )
     })
     setCanProceed(allValid)
-  }, [answer])
+  }, [answer, isUnifiedArea, unifiedSubarea])
 
   // Quick action: set all subareas available with uniform fee/time
   const handleApplyBatch = () => {
@@ -152,8 +168,79 @@ export default function MainAreaStep({
           </div>
         </div>
 
-        {/* Subareas List (when general is YES) */}
-        {answer.generalDeliveryAvailable === true && (
+        {/* Subareas / Unified Area Details (when general is YES) */}
+        {answer.generalDeliveryAvailable === true && isUnifiedArea && unifiedSubarea && (
+          <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm animate-fade-in">
+            <div className="flex items-center gap-2 text-sm sm:text-base font-extrabold text-slate-800 mb-1.5">
+              <Sparkles className="w-4 h-4 text-sky-600" />
+              تحديد سعر ووقت التوصيل لمنطقة ({answer.mainAreaNameAr}) بالكامل:
+            </div>
+            <p className="text-xs text-slate-500 mb-5">
+              يتم تطبيق هذا السعر والوقت على كافة أنحاء المنطقة بدون استثناء.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  سعر التوصيل (جنيه مصري) *
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="مثال: 30"
+                    value={unifiedSubarea.deliveryFee ?? ''}
+                    onChange={(e) => {
+                      const fee = e.target.value === '' ? undefined : Number(e.target.value)
+                      onUpdateSubarea(
+                        answer.mainAreaId,
+                        unifiedSubarea.subareaId,
+                        true,
+                        fee,
+                        unifiedSubarea.estimatedTime
+                      )
+                    }}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500 font-bold text-slate-900 text-sm"
+                  />
+                  <span className="absolute left-3 top-3.5 text-xs font-bold text-slate-400">
+                    ج.م
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  وقت الوصول المتوقع (بالدقيقة) *
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="مثال: 45"
+                    value={unifiedSubarea.estimatedTime ?? ''}
+                    onChange={(e) => {
+                      const time = e.target.value === '' ? undefined : Number(e.target.value)
+                      onUpdateSubarea(
+                        answer.mainAreaId,
+                        unifiedSubarea.subareaId,
+                        true,
+                        unifiedSubarea.deliveryFee,
+                        time
+                      )
+                    }}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500 font-bold text-slate-900 text-sm"
+                  />
+                  <span className="absolute left-3 top-3.5 text-xs font-bold text-slate-400">
+                    دقيقة
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Subareas List (when general is YES and NOT unified) */}
+        {answer.generalDeliveryAvailable === true && !isUnifiedArea && (
           <div className="space-y-4 animate-fade-in">
             {/* Header for subareas */}
             <div className="flex items-center justify-between flex-wrap gap-2 pt-2 pb-1">

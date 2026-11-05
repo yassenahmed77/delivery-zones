@@ -30,12 +30,22 @@ function buildInitialAnswers(): MainAreaAnswer[] {
     governorateNameAr: ma.governorateNameAr,
     governorateNameEn: ma.governorateNameEn,
     generalDeliveryAvailable: null,
-    subareas: ma.subareas.map((sa): SubareaAnswer => ({
-      subareaId: sa.id,
-      subareaNameAr: sa.nameAr,
-      subareaNameEn: sa.nameEn,
-      deliveryAvailable: null,
-    })),
+    subareas:
+      ma.subareas.length > 0
+        ? ma.subareas.map((sa): SubareaAnswer => ({
+            subareaId: sa.id,
+            subareaNameAr: sa.nameAr,
+            subareaNameEn: sa.nameEn,
+            deliveryAvailable: null,
+          }))
+        : [
+            {
+              subareaId: `${ma.id}-unified`,
+              subareaNameAr: 'المنطقة بالكامل',
+              subareaNameEn: 'Entire Area',
+              deliveryAvailable: null,
+            },
+          ],
   }))
 }
 
@@ -59,11 +69,24 @@ function DeliveryCoverageApp() {
   const updateMainAreaAnswer = useCallback(
     (mainAreaId: string, generalAvailable: boolean) => {
       setAnswers((prev) =>
-        prev.map((a) =>
-          a.mainAreaId === mainAreaId
-            ? { ...a, generalDeliveryAvailable: generalAvailable }
-            : a
-        )
+        prev.map((a) => {
+          if (a.mainAreaId !== mainAreaId) return a
+          const isUnified =
+            a.subareas.length === 1 && a.subareas[0].subareaId.endsWith('-unified')
+
+          const updatedSubareas = isUnified
+            ? a.subareas.map((sa) => ({
+                ...sa,
+                deliveryAvailable: generalAvailable,
+              }))
+            : a.subareas
+
+          return {
+            ...a,
+            generalDeliveryAvailable: generalAvailable,
+            subareas: updatedSubareas,
+          }
+        })
       )
     },
     []

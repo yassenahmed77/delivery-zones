@@ -54,6 +54,8 @@ function MainAreaCard({
   onEdit: (i: number) => void
 }) {
   const [expanded, setExpanded] = useState(false)
+  const isUnified =
+    answer.subareas.length === 1 && answer.subareas[0].subareaId.endsWith('-unified')
   const coveredSubareas = answer.subareas.filter(
     (s) => s.deliveryAvailable === true
   ).length
@@ -101,7 +103,9 @@ function MainAreaCard({
       {expanded && answer.generalDeliveryAvailable === true && (
         <div className="border-t border-slate-100 bg-slate-50/50 p-4 space-y-2.5 animate-fade-in">
           <div className="text-xs font-bold text-slate-500 mb-2">
-            الأحياء المغطاة: {coveredSubareas} من {answer.subareas.length}
+            {isUnified
+              ? 'تغطية موحدة لكافة أنحاء المنطقة'
+              : `الأحياء المغطاة: ${coveredSubareas} من ${answer.subareas.length}`}
           </div>
           <div className="grid grid-cols-1 gap-2">
             {answer.subareas.map((sa) => (
