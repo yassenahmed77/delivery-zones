@@ -67,62 +67,61 @@ export default function SubareaInput({ subarea, onUpdate }: SubareaInputProps) {
           : 'border-slate-200 bg-white hover:border-slate-300'
       }`}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start gap-2.5">
-            <span
-              className={`w-2.5 h-2.5 rounded-full mt-1 shrink-0 ${
-                isAvailable
-                  ? 'bg-emerald-500 ring-2 ring-emerald-200'
-                  : isUnavailable
-                  ? 'bg-rose-400 ring-2 ring-rose-200'
-                  : 'bg-slate-300'
-              }`}
-            />
-            <div className="min-w-0 flex-1">
-              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug break-words">
-                {subarea.subareaNameAr}
-              </h4>
-              <span className="text-[11px] font-medium text-slate-400 block mt-0.5">
-                {subarea.subareaNameEn}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Yes / No Toggle buttons */}
-        <div className="flex items-center gap-2 self-stretch sm:self-center shrink-0 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/60 justify-end">
-          <button
-            type="button"
-            onClick={() => handleAvailabilityChange(true)}
-            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-black transition-all duration-150 cursor-pointer ${
+      {/* 1. Area Name ON TOP BY ITSELF (Full Width - No Truncation) */}
+      <div className="mb-3">
+        <div className="flex items-start gap-2.5">
+          <span
+            className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${
               isAvailable
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white'
+                ? 'bg-emerald-500 ring-4 ring-emerald-100'
+                : isUnavailable
+                ? 'bg-rose-400 ring-4 ring-rose-100'
+                : 'bg-slate-300'
             }`}
-          >
-            <Check className="w-3.5 h-3.5" strokeWidth={3} />
-            <span>متاح</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleAvailabilityChange(false)}
-            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-black transition-all duration-150 cursor-pointer ${
-              isUnavailable
-                ? 'bg-rose-500 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white'
-            }`}
-          >
-            <X className="w-3.5 h-3.5" strokeWidth={3} />
-            <span>غير متاح</span>
-          </button>
+          />
+          <div className="min-w-0 flex-1">
+            <h4 className="text-base font-black text-slate-900 leading-snug break-words">
+              {subarea.subareaNameAr}
+            </h4>
+            <span className="text-xs font-semibold text-slate-400 block mt-0.5">
+              {subarea.subareaNameEn}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Fee & Time Inputs */}
+      {/* 2. The Two Options Directly Under the Name */}
+      <div className="grid grid-cols-2 gap-2.5">
+        <button
+          type="button"
+          onClick={() => handleAvailabilityChange(true)}
+          className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-black transition-all duration-150 cursor-pointer border ${
+            isAvailable
+              ? 'bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-600/20'
+              : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+          }`}
+        >
+          <Check className="w-4 h-4" strokeWidth={3} />
+          <span>متاح</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleAvailabilityChange(false)}
+          className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-black transition-all duration-150 cursor-pointer border ${
+            isUnavailable
+              ? 'bg-rose-600 border-rose-600 text-white shadow-md shadow-rose-600/20'
+              : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+          }`}
+        >
+          <X className="w-4 h-4" strokeWidth={3} />
+          <span>غير متاح</span>
+        </button>
+      </div>
+
+      {/* 3. Fee & Time Inputs (when Available) */}
       {isAvailable && (
-        <div className="mt-4 pt-3.5 border-t border-emerald-100/80 grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fade-in">
+        <div className="mt-4 pt-3.5 border-t border-emerald-200/70 grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fade-in">
           <div>
             <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1.5">
               <Banknote className="w-3.5 h-3.5 text-emerald-600" />
@@ -135,13 +134,13 @@ export default function SubareaInput({ subarea, onUpdate }: SubareaInputProps) {
                 value={fee}
                 onChange={(e) => handleFeeChange(e.target.value)}
                 placeholder="مثال: 25"
-                className={`w-full px-3 py-2 pr-10 rounded-xl border text-sm font-semibold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${
+                className={`w-full px-3.5 py-2.5 pr-10 rounded-xl border text-sm font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${
                   fee === '' || Number(fee) < 0
                     ? 'border-amber-300 ring-1 ring-amber-200'
                     : 'border-slate-200'
                 }`}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
                 ج.م
               </span>
             </div>
@@ -159,13 +158,13 @@ export default function SubareaInput({ subarea, onUpdate }: SubareaInputProps) {
                 value={time}
                 onChange={(e) => handleTimeChange(e.target.value)}
                 placeholder="مثال: 35"
-                className={`w-full px-3 py-2 pr-12 rounded-xl border text-sm font-semibold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${
+                className={`w-full px-3.5 py-2.5 pr-12 rounded-xl border text-sm font-bold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${
                   time === '' || Number(time) <= 0
                     ? 'border-amber-300 ring-1 ring-amber-200'
                     : 'border-slate-200'
                 }`}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
                 دقيقة
               </span>
             </div>
