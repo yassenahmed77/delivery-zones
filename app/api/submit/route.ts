@@ -16,29 +16,27 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
-    const { data: inserted, error: insertError } = await supabase
+    const { error: insertError } = await supabase
       .from('submissions')
       .insert({
         restaurant_name: restaurantName.trim(),
         answers: answers,
         missing_area_note: missingAreaNote || null,
       })
-      .select('id')
-      .single()
 
     if (insertError) {
       console.error('Supabase insert error:', insertError)
       return NextResponse.json(
-        { error: 'حدث خطأ أثناء حفظ البيانات' },
+        { error: 'حدث خطأ أثناء حفظ البيانات: ' + (insertError.message || '') },
         { status: 500 }
       )
     }
 
-    return NextResponse.json({ success: true, submissionId: inserted?.id }, { status: 200 })
-  } catch (err) {
+    return NextResponse.json({ success: true }, { status: 200 })
+  } catch (err: unknown) {
     console.error('Submit API error:', err)
     return NextResponse.json(
-      { error: 'حدث خطأ غير متوقع' },
+      { error: err instanceof Error ? err.message : 'حدث خطأ غير متوقع' },
       { status: 500 }
     )
   }
