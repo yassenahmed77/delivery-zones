@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { deliveryAreas } from '@/data/deliveryAreas'
 import type { FormSubmission, MainAreaAnswer, SubareaAnswer } from '@/lib/types'
 import WelcomeScreen from '@/components/form/WelcomeScreen'
@@ -11,7 +12,6 @@ import ProgressBar from '@/components/form/ProgressBar'
 
 type FormStage = 'welcome' | 'form' | 'review' | 'confirmed'
 
-// Flatten all main areas into a single ordered list
 const allMainAreas = deliveryAreas.flatMap((gov) =>
   gov.mainAreas.map((ma) => ({
     ...ma,
@@ -39,10 +39,13 @@ function buildInitialAnswers(): MainAreaAnswer[] {
   }))
 }
 
-export default function HomePage() {
+function DeliveryCoverageApp() {
+  const searchParams = useSearchParams()
+  const initialName = searchParams.get('restaurant') || searchParams.get('store') || ''
+
   const [stage, setStage] = useState<FormStage>('welcome')
   const [currentStep, setCurrentStep] = useState(0)
-  const [restaurantName, setRestaurantName] = useState('')
+  const [restaurantName, setRestaurantName] = useState(initialName)
   const [answers, setAnswers] = useState<MainAreaAnswer[]>(buildInitialAnswers)
   const [missingAreaNote, setMissingAreaNote] = useState('')
 
@@ -142,7 +145,7 @@ export default function HomePage() {
   }
 
   const submission: FormSubmission = {
-    restaurantName: restaurantName || undefined,
+    restaurantName: restaurantName.trim(),
     answers,
     missingAreaNote: missingAreaNote || undefined,
   }
@@ -152,6 +155,16 @@ export default function HomePage() {
       <div className="max-w-2xl mx-auto">
         {stage === 'form' && (
           <div className="animate-fade-in">
+            {/* Restaurant indicator badge */}
+            <div className="flex items-center justify-between px-4 py-2.5 bg-white rounded-2xl border border-slate-200/80 mb-4 shadow-xs">
+              <span className="text-xs font-bold text-slate-500">
+                المطعم:
+              </span>
+              <span className="text-xs font-black text-slate-900 bg-sky-50 text-sky-800 px-2.5 py-1 rounded-lg border border-sky-100">
+                {restaurantName}
+              </span>
+            </div>
+
             <ProgressBar current={currentStep + 1} total={totalSteps} />
             <MainAreaStep
               answer={answers[currentStep]}
@@ -178,5 +191,17 @@ export default function HomePage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <DeliveryCoverageApp />
+    </Suspense>
   )
 }

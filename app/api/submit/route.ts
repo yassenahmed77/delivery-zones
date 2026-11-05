@@ -4,7 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { restaurantName, answers, missingAreaNote, storeId, storeSlug } = body
+    const { restaurantName, answers, missingAreaNote } = body
+
+    if (!restaurantName || !restaurantName.trim()) {
+      return NextResponse.json({ error: 'اسم المطعم إجباري' }, { status: 400 })
+    }
 
     if (!answers || !Array.isArray(answers)) {
       return NextResponse.json({ error: 'بيانات غير صالحة' }, { status: 400 })
@@ -12,13 +16,10 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // 1. Insert the submission
     const { data: inserted, error: insertError } = await supabase
       .from('submissions')
       .insert({
-        store_id: storeId || null,
-        store_slug: storeSlug || null,
-        restaurant_name: restaurantName || null,
+        restaurant_name: restaurantName.trim(),
         answers: answers,
         missing_area_note: missingAreaNote || null,
       })
@@ -31,17 +32,6 @@ export async function POST(request: NextRequest) {
         { error: 'حدث خطأ أثناء حفظ البيانات' },
         { status: 500 }
       )
-    }
-
-    // 2. If bound to a store, update the store's status and submitted_at
-    if (storeId) {
-      await supabase
-        .from('stores')
-        .update({
-          status: 'submitted',
-          submitted_at: new Date().toISOString(),
-        })
-        .eq('id', storeId)
     }
 
     return NextResponse.json({ success: true, submissionId: inserted?.id }, { status: 200 })

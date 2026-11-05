@@ -22,22 +22,8 @@ export interface MainAreaAnswer {
   subareas: SubareaAnswer[];
 }
 
-export interface Store {
-  id: string;
-  name: string;
-  slug: string;
-  phone?: string | null;
-  notes?: string | null;
-  status: 'pending' | 'submitted';
-  created_at: string;
-  submitted_at?: string | null;
-  submissions_count?: number;
-}
-
 export interface FormSubmission {
-  storeId?: string;
-  storeSlug?: string;
-  restaurantName?: string;
+  restaurantName: string;
   answers: MainAreaAnswer[];
   missingAreaNote?: string;
   submittedAt?: string;
@@ -46,8 +32,6 @@ export interface FormSubmission {
 // Admin submission row
 export interface DbSubmission {
   id: string;
-  store_id?: string | null;
-  store_slug?: string | null;
   restaurant_name: string | null;
   answers: MainAreaAnswer[];
   missing_area_note: string | null;
