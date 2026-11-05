@@ -67,52 +67,54 @@ export default function SubareaInput({ subarea, onUpdate }: SubareaInputProps) {
           : 'border-slate-200 bg-white hover:border-slate-300'
       }`}
     >
-      <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-start gap-2.5">
             <span
-              className={`w-2 h-2 rounded-full ${
+              className={`w-2.5 h-2.5 rounded-full mt-1 shrink-0 ${
                 isAvailable
-                  ? 'bg-emerald-500'
+                  ? 'bg-emerald-500 ring-2 ring-emerald-200'
                   : isUnavailable
-                  ? 'bg-rose-400'
+                  ? 'bg-rose-400 ring-2 ring-rose-200'
                   : 'bg-slate-300'
               }`}
             />
-            <h4 className="text-sm font-bold text-slate-900 truncate">
-              {subarea.subareaNameAr}
-            </h4>
+            <div className="min-w-0 flex-1">
+              <h4 className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug break-words">
+                {subarea.subareaNameAr}
+              </h4>
+              <span className="text-[11px] font-medium text-slate-400 block mt-0.5">
+                {subarea.subareaNameEn}
+              </span>
+            </div>
           </div>
-          <span className="text-[11px] text-slate-400 mr-4">
-            {subarea.subareaNameEn}
-          </span>
         </div>
 
         {/* Yes / No Toggle buttons */}
-        <div className="flex items-center gap-2 shrink-0 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60">
+        <div className="flex items-center gap-2 self-stretch sm:self-center shrink-0 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/60 justify-end">
           <button
             type="button"
             onClick={() => handleAvailabilityChange(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-black transition-all duration-150 cursor-pointer ${
               isAvailable
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white'
             }`}
           >
-            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <Check className="w-3.5 h-3.5" strokeWidth={3} />
             <span>متاح</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleAvailabilityChange(false)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-xs font-black transition-all duration-150 cursor-pointer ${
               isUnavailable
                 ? 'bg-rose-500 text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white'
             }`}
           >
-            <X className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <X className="w-3.5 h-3.5" strokeWidth={3} />
             <span>غير متاح</span>
           </button>
         </div>

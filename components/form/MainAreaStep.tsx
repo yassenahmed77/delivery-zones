@@ -112,7 +112,7 @@ export default function MainAreaStep({
   return (
     <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/80 overflow-hidden transition-all">
       {/* Top Banner */}
-      <div className="p-6 sm:p-8 border-b border-slate-100 bg-gradient-to-b from-slate-50/70 to-white">
+      <div className="p-4 sm:p-8 border-b border-slate-100 bg-gradient-to-b from-slate-50/70 to-white">
         <div className="flex items-center justify-between gap-4 mb-3">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800">
             <MapPin className="w-3.5 h-3.5" />
@@ -123,17 +123,21 @@ export default function MainAreaStep({
           </span>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-snug break-words">
           {answer.mainAreaNameAr}
         </h2>
         <p className="text-xs text-slate-400 mt-1">{answer.mainAreaNameEn}</p>
       </div>
 
-      <div className="p-6 sm:p-8">
+      <div className="p-4 sm:p-8">
         {/* General Delivery Availability Question */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200/80 mb-6">
-          <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
-            هل المطعم بيوصل لمنطقة ({answer.mainAreaNameAr}) بشكل عام؟
+        <div className="p-4 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200/80 mb-6">
+          <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 leading-snug break-words">
+            هل المطعم بيوصل لمنطقة{' '}
+            <span className="text-sky-700 font-black underline decoration-sky-300 underline-offset-4">
+              {answer.mainAreaNameAr}
+            </span>{' '}
+            بشكل عام؟
           </h3>
           <p className="text-xs text-slate-500 mb-5 leading-relaxed">
             إذا اخترت &quot;لا&quot;، سيتم تخطي كافة الأحياء والمناطق الفرعية التابعة لها والانتقال للمنطقة التالية مباشرة.
@@ -171,9 +175,9 @@ export default function MainAreaStep({
         {/* Subareas / Unified Area Details (when general is YES) */}
         {answer.generalDeliveryAvailable === true && isUnifiedArea && unifiedSubarea && (
           <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm animate-fade-in">
-            <div className="flex items-center gap-2 text-sm sm:text-base font-extrabold text-slate-800 mb-1.5">
-              <Sparkles className="w-4 h-4 text-sky-600" />
-              تحديد سعر ووقت التوصيل لمنطقة ({answer.mainAreaNameAr}) بالكامل:
+            <div className="flex items-center gap-2 text-sm sm:text-base font-extrabold text-slate-800 mb-1.5 leading-snug break-words">
+              <Sparkles className="w-4 h-4 text-sky-600 shrink-0" />
+              <span>تحديد سعر ووقت التوصيل لمنطقة ({answer.mainAreaNameAr}) بالكامل:</span>
             </div>
             <p className="text-xs text-slate-500 mb-5">
               يتم تطبيق هذا السعر والوقت على كافة أنحاء المنطقة بدون استثناء.

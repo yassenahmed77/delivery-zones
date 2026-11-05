@@ -80,7 +80,7 @@ function MainAreaCard({
             <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md">
               {answer.governorateNameAr}
             </span>
-            <div className="font-bold text-sm text-slate-900 truncate mt-1">
+            <div className="font-bold text-sm text-slate-900 break-words leading-snug mt-1">
               {answer.mainAreaNameAr}
             </div>
           </div>
@@ -111,12 +111,12 @@ function MainAreaCard({
             {answer.subareas.map((sa) => (
               <div
                 key={sa.subareaId}
-                className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-slate-200/60 text-xs"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white border border-slate-200/60 text-xs"
               >
-                <span className="font-semibold text-slate-800">
+                <span className="font-bold text-slate-800 break-words leading-snug">
                   {sa.subareaNameAr}
                 </span>
-                <div className="flex items-center gap-2.5 shrink-0">
+                <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
                   {sa.deliveryAvailable === true && (
                     <>
                       <span className="inline-flex items-center gap-1 font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, Suspense } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { deliveryAreas } from '@/data/deliveryAreas'
 import type { FormSubmission, MainAreaAnswer, SubareaAnswer } from '@/lib/types'
@@ -58,6 +58,49 @@ function DeliveryCoverageApp() {
   const [restaurantName, setRestaurantName] = useState(initialName)
   const [answers, setAnswers] = useState<MainAreaAnswer[]>(buildInitialAnswers)
   const [missingAreaNote, setMissingAreaNote] = useState('')
+
+  // Hydrate draft from localStorage on mount (prevents data loss if browser is refreshed)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('delivery_form_draft')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.restaurantName && !initialName) setRestaurantName(parsed.restaurantName)
+        if (parsed.stage && parsed.stage !== 'confirmed') setStage(parsed.stage)
+        if (typeof parsed.currentStep === 'number') setCurrentStep(parsed.currentStep)
+        if (parsed.missingAreaNote) setMissingAreaNote(parsed.missingAreaNote)
+        if (Array.isArray(parsed.answers) && parsed.answers.length === allMainAreas.length) {
+          setAnswers(parsed.answers)
+        }
+      }
+    } catch {
+      // Ignore storage errors in restricted webviews
+    }
+  }, [initialName])
+
+  // Autosave draft to localStorage on changes
+  useEffect(() => {
+    if (stage === 'confirmed') {
+      try {
+        localStorage.removeItem('delivery_form_draft')
+      } catch {}
+      return
+    }
+    try {
+      localStorage.setItem(
+        'delivery_form_draft',
+        JSON.stringify({
+          restaurantName,
+          stage,
+          currentStep,
+          answers,
+          missingAreaNote,
+        })
+      )
+    } catch {
+      // Ignore quota errors
+    }
+  }, [restaurantName, stage, currentStep, answers, missingAreaNote])
 
   const totalSteps = allMainAreas.length
 
@@ -149,6 +192,9 @@ function DeliveryCoverageApp() {
   }, [])
 
   const handleSubmitSuccess = useCallback(() => {
+    try {
+      localStorage.removeItem('delivery_form_draft')
+    } catch {}
     setStage('confirmed')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
@@ -174,7 +220,7 @@ function DeliveryCoverageApp() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6">
+    <div className="min-h-screen bg-slate-50 py-4 px-3 sm:py-8 sm:px-6">
       <div className="max-w-2xl mx-auto">
         {stage === 'form' && (
           <div className="animate-fade-in">
