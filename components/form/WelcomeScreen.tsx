@@ -1,17 +1,21 @@
 'use client'
 
-import { MapPin, Store, ShieldCheck, Clock, ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { MapPin, Store, ShieldCheck, Clock, ArrowLeft, CheckCircle2, Lock } from 'lucide-react'
 
 interface WelcomeScreenProps {
   restaurantName: string
   onRestaurantNameChange: (name: string) => void
   onStart: () => void
+  isStoreLocked?: boolean
+  storePhone?: string | null
 }
 
 export default function WelcomeScreen({
   restaurantName,
   onRestaurantNameChange,
   onStart,
+  isStoreLocked = false,
+  storePhone,
 }: WelcomeScreenProps) {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
@@ -36,32 +40,55 @@ export default function WelcomeScreen({
 
         {/* Main Card */}
         <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-6 sm:p-8">
-          {/* Restaurant input field */}
-          <div className="mb-6">
-            <label
-              htmlFor="restaurant-name"
-              className="block text-sm font-bold text-slate-800 mb-2 flex items-center justify-between"
-            >
-              <span className="flex items-center gap-2">
-                <Store className="w-4 h-4 text-sky-600" />
-                اسم المطعم أو الفرع
-              </span>
-              <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full">
-                اختياري
-              </span>
-            </label>
-            <div className="relative">
-              <input
-                id="restaurant-name"
-                type="text"
-                value={restaurantName}
-                onChange={(e) => onRestaurantNameChange(e.target.value)}
-                placeholder="مثال: مطعم الشرق - فرع القاهرة"
-                className="w-full px-4 py-3.5 pr-11 rounded-2xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm transition-all shadow-sm"
-              />
-              <Store className="w-5 h-5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          {/* Restaurant input field or verified badge */}
+          {isStoreLocked ? (
+            <div className="mb-6 p-4 rounded-2xl bg-sky-50/70 border border-sky-200/80">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-sky-800 flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-sky-600" />
+                  رابط مخصص وموثق للمحل
+                </span>
+                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                  معتمد
+                </span>
+              </div>
+              <div className="text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
+                <Store className="w-5 h-5 text-sky-600 shrink-0" />
+                <span>{restaurantName}</span>
+              </div>
+              {storePhone && (
+                <div className="text-xs text-slate-500 mt-1">
+                  رقم التواصل المسجل: <span dir="ltr">{storePhone}</span>
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            <div className="mb-6">
+              <label
+                htmlFor="restaurant-name"
+                className="block text-sm font-bold text-slate-800 mb-2 flex items-center justify-between"
+              >
+                <span className="flex items-center gap-2">
+                  <Store className="w-4 h-4 text-sky-600" />
+                  اسم المطعم أو الفرع
+                </span>
+                <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                  اختياري
+                </span>
+              </label>
+              <div className="relative">
+                <input
+                  id="restaurant-name"
+                  type="text"
+                  value={restaurantName}
+                  onChange={(e) => onRestaurantNameChange(e.target.value)}
+                  placeholder="مثال: مطعم الشرق - فرع القاهرة"
+                  className="w-full px-4 py-3.5 pr-11 rounded-2xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm transition-all shadow-sm"
+                />
+                <Store className="w-5 h-5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+          )}
 
           {/* Quick Features Highlight */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { MainAreaAnswer, SubareaAnswer } from '@/lib/types'
+import type { MainAreaAnswer } from '@/lib/types'
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient()
@@ -15,23 +15,28 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url)
   const submissionId = searchParams.get('id')
+  const storeId = searchParams.get('store_id')
 
-  if (!submissionId) {
-    return NextResponse.json({ error: 'Missing submission ID' }, { status: 400 })
+  if (!submissionId && !storeId) {
+    return NextResponse.json({ error: 'Missing submission ID or store ID' }, { status: 400 })
   }
 
-  const { data, error } = await supabase
-    .from('submissions')
-    .select('*')
-    .eq('id', submissionId)
-    .single()
+  let query = supabase.from('submissions').select('*')
+
+  if (submissionId) {
+    query = query.eq('id', submissionId)
+  } else if (storeId) {
+    query = query.eq('store_id', storeId).order('created_at', { ascending: false }).limit(1)
+  }
+
+  const { data, error } = await query.single()
 
   if (error || !data) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  // Build CSV
-  const BOM = '\uFEFF' // UTF-8 BOM for Excel Arabic support
+  // Build CSV with Excel UTF-8 BOM
+  const BOM = '\uFEFF'
   const headers = [
     'المحافظة',
     'المنطقة الرئيسية',
@@ -85,8 +90,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const escape = (val: string) =>
-    `"${val.replace(/"/g, '""')}"`
+  const escape = (val: string) => `"${val.replace(/"/g, '""')}"`
 
   const csvContent =
     BOM +
@@ -94,13 +98,14 @@ export async function GET(request: NextRequest) {
       .map((row) => row.map(escape).join(','))
       .join('\r\n')
 
-  const filename = `delivery-zones-${data.restaurant_name || submissionId}-${new Date().toISOString().slice(0, 10)}.csv`
+  const safeName = (data.restaurant_name || data.store_slug || 'delivery-zones')
+    .replace(/[^\w\u0600-\u06FF-]/g, '_')
+  const filename = `${safeName}-${new Date().toISOString().slice(0, 10)}.csv`
 
   return new NextResponse(csvContent, {
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',
-      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Disposition': `attachment; filename="${encodeURIComponent(filename)}"`,
     },
   })
 }
-

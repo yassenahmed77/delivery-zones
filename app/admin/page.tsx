@@ -13,9 +13,9 @@ export default async function AdminPage() {
   }
 
   // Fetch all submissions server-side
-  const { data: submissions, error } = await supabase
+  const { data: submissions } = await supabase
     .from('submissions')
-    .select('id, restaurant_name, submitted_at, created_at, missing_area_note')
+    .select('id, restaurant_name, submitted_at, created_at, missing_area_note, store_id, store_slug')
     .order('created_at', { ascending: false })
 
   return (
@@ -25,4 +25,3 @@ export default async function AdminPage() {
     />
   )
 }
-
