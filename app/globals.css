@@ -1,17 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --accent: #0ea5e9;
-  --accent-dark: #0284c7;
-  --navy: #0f172a;
-  --navy-mid: #1e293b;
-  --navy-light: #334155;
-  --border: #e2e8f0;
-  --muted: #64748b;
-  --success: #10b981;
-  --danger: #ef4444;
+  --font-cairo: 'Cairo', system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -23,61 +14,36 @@ html {
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans Arabic', 'Cairo', sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: var(--font-cairo);
   direction: rtl;
   text-align: right;
   min-height: 100vh;
-}
-
-/* Smooth transitions */
-* {
-  transition-property: color, background-color, border-color, box-shadow;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-/* Number inputs — RTL friendly */
-input[type="number"] {
-  -moz-appearance: textfield;
-  direction: ltr;
-  text-align: right;
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Fade in animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeInUp 0.3s ease-out forwards;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 3px;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

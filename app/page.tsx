@@ -99,26 +99,32 @@ export default function HomePage() {
   const handleNext = useCallback(() => {
     if (currentStep < totalSteps - 1) {
       setCurrentStep((s) => s + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } else {
       setStage('review')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }, [currentStep, totalSteps])
 
   const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep((s) => s - 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } else {
       setStage('welcome')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }, [currentStep])
 
   const handleEditFromReview = useCallback((stepIndex: number) => {
     setCurrentStep(stepIndex)
     setStage('form')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
   const handleSubmitSuccess = useCallback(() => {
     setStage('confirmed')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
   if (stage === 'welcome') {
@@ -142,12 +148,11 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        <ProgressBar current={currentStep + 1} total={totalSteps} />
-
+    <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6">
+      <div className="max-w-2xl mx-auto">
         {stage === 'form' && (
           <div className="animate-fade-in">
+            <ProgressBar current={currentStep + 1} total={totalSteps} />
             <MainAreaStep
               answer={answers[currentStep]}
               stepIndex={currentStep}

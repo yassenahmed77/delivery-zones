@@ -21,11 +21,10 @@ export default function SubareaInput({ subarea, onUpdate }: SubareaInputProps) {
     subarea.estimatedTime !== undefined ? String(subarea.estimatedTime) : ''
   )
 
-  // Sync when parent resets (e.g. navigating back)
   useEffect(() => {
     setFee(subarea.deliveryFee !== undefined ? String(subarea.deliveryFee) : '')
     setTime(subarea.estimatedTime !== undefined ? String(subarea.estimatedTime) : '')
-  }, [subarea.subareaId])
+  }, [subarea.subareaId, subarea.deliveryFee, subarea.estimatedTime])
 
   const handleAvailabilityChange = (available: boolean) => {
     if (available) {
@@ -60,90 +59,117 @@ export default function SubareaInput({ subarea, onUpdate }: SubareaInputProps) {
 
   return (
     <div
-      className={`rounded-xl border p-4 transition-colors ${
+      className={`rounded-2xl border transition-all duration-200 p-4 ${
         isAvailable
-          ? 'border-emerald-200 bg-emerald-50/50'
+          ? 'border-emerald-300 bg-emerald-50/40 shadow-xs'
           : isUnavailable
-          ? 'border-slate-200 bg-slate-50/50'
-          : 'border-slate-200 bg-white'
+          ? 'border-slate-200 bg-slate-50/70 opacity-80'
+          : 'border-slate-200 bg-white hover:border-slate-300'
       }`}
     >
-      {/* Subarea name + availability buttons */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <span className="text-sm font-medium text-slate-800 flex-1 min-w-0">
-          {subarea.subareaNameAr}
-        </span>
-        <div className="flex gap-2 shrink-0">
+      <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isAvailable
+                  ? 'bg-emerald-500'
+                  : isUnavailable
+                  ? 'bg-rose-400'
+                  : 'bg-slate-300'
+              }`}
+            />
+            <h4 className="text-sm font-bold text-slate-900 truncate">
+              {subarea.subareaNameAr}
+            </h4>
+          </div>
+          <span className="text-[11px] text-slate-400 mr-4">
+            {subarea.subareaNameEn}
+          </span>
+        </div>
+
+        {/* Yes / No Toggle buttons */}
+        <div className="flex items-center gap-2 shrink-0 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60">
           <button
+            type="button"
             onClick={() => handleAvailabilityChange(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer ${
               isAvailable
-                ? 'border-emerald-500 bg-emerald-500 text-white'
-                : 'border-slate-200 bg-white text-slate-600 hover:border-emerald-300 hover:text-emerald-700'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white'
             }`}
           >
-            <Check className="w-3 h-3" strokeWidth={2.5} />
-            نعم
+            <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <span>متاح</span>
           </button>
+
           <button
+            type="button"
             onClick={() => handleAvailabilityChange(false)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer ${
               isUnavailable
-                ? 'border-red-400 bg-red-400 text-white'
-                : 'border-slate-200 bg-white text-slate-600 hover:border-red-300 hover:text-red-600'
+                ? 'bg-rose-500 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white'
             }`}
           >
-            <X className="w-3 h-3" strokeWidth={2.5} />
-            لا
+            <X className="w-3.5 h-3.5" strokeWidth={2.5} />
+            <span>غير متاح</span>
           </button>
         </div>
       </div>
 
-      {/* Fee + Time inputs — only when available */}
+      {/* Fee & Time Inputs */}
       {isAvailable && (
-        <div className="mt-4 grid grid-cols-2 gap-3 animate-fade-in">
-          {/* Delivery fee */}
+        <div className="mt-4 pt-3.5 border-t border-emerald-100/80 grid grid-cols-1 sm:grid-cols-2 gap-3 animate-fade-in">
           <div>
-            <label className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-1.5">
-              <Banknote className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.5} />
-              سعر التوصيل (جنيه)
+            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1.5">
+              <Banknote className="w-3.5 h-3.5 text-emerald-600" />
+              سعر التوصيل
             </label>
-            <input
-              type="number"
-              min={0}
-              value={fee}
-              onChange={(e) => handleFeeChange(e.target.value)}
-              placeholder="0"
-              className={`w-full px-3 py-2 rounded-lg border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent ${
-                fee === '' || Number(fee) < 0
-                  ? 'border-slate-200'
-                  : 'border-emerald-300'
-              }`}
-            />
+            <div className="relative">
+              <input
+                type="number"
+                min={0}
+                value={fee}
+                onChange={(e) => handleFeeChange(e.target.value)}
+                placeholder="مثال: 25"
+                className={`w-full px-3 py-2 pr-10 rounded-xl border text-sm font-semibold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${
+                  fee === '' || Number(fee) < 0
+                    ? 'border-amber-300 ring-1 ring-amber-200'
+                    : 'border-slate-200'
+                }`}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                ج.م
+              </span>
+            </div>
           </div>
 
-          {/* Estimated time */}
           <div>
-            <label className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-1.5">
-              <Clock className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.5} />
-              وقت الوصول (دقيقة)
+            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1.5">
+              <Clock className="w-3.5 h-3.5 text-emerald-600" />
+              وقت الوصول التقريبي
             </label>
-            <input
-              type="number"
-              min={1}
-              value={time}
-              onChange={(e) => handleTimeChange(e.target.value)}
-              placeholder="30"
-              className={`w-full px-3 py-2 rounded-lg border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent ${
-                time === '' || Number(time) <= 0
-                  ? 'border-slate-200'
-                  : 'border-emerald-300'
-              }`}
-            />
+            <div className="relative">
+              <input
+                type="number"
+                min={1}
+                value={time}
+                onChange={(e) => handleTimeChange(e.target.value)}
+                placeholder="مثال: 35"
+                className={`w-full px-3 py-2 pr-12 rounded-xl border text-sm font-semibold text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all ${
+                  time === '' || Number(time) <= 0
+                    ? 'border-amber-300 ring-1 ring-amber-200'
+                    : 'border-slate-200'
+                }`}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                دقيقة
+              </span>
+            </div>
           </div>
         </div>
       )}
     </div>
   )
 }
-

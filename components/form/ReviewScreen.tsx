@@ -2,7 +2,19 @@
 
 import { useState } from 'react'
 import type { FormSubmission, MainAreaAnswer } from '@/lib/types'
-import { Check, X, Pencil, Send, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react'
+import {
+  Check,
+  X,
+  Pencil,
+  Send,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  HelpCircle,
+  Clock,
+  Banknote,
+  CheckCircle2,
+} from 'lucide-react'
 
 interface ReviewScreenProps {
   submission: FormSubmission
@@ -15,19 +27,19 @@ interface ReviewScreenProps {
 function AnswerBadge({ available }: { available: boolean | null }) {
   if (available === null)
     return (
-      <span className="inline-flex items-center gap-1 text-xs bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full">
-        <AlertCircle className="w-3 h-3" /> غير محدد
+      <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full">
+        <HelpCircle className="w-3 h-3" /> لم يُحدد
       </span>
     )
   if (available)
     return (
-      <span className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
-        <Check className="w-3 h-3" /> متاح
+      <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+        <Check className="w-3 h-3" strokeWidth={2.5} /> متاح
       </span>
     )
   return (
-    <span className="inline-flex items-center gap-1 text-xs bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full">
-      <X className="w-3 h-3" /> غير متاح
+    <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded-full">
+      <X className="w-3 h-3" strokeWidth={2.5} /> غير متاح
     </span>
   )
 }
@@ -42,16 +54,19 @@ function MainAreaCard({
   onEdit: (i: number) => void
 }) {
   const [expanded, setExpanded] = useState(false)
-  const coveredSubareas = answer.subareas.filter((s) => s.deliveryAvailable === true).length
+  const coveredSubareas = answer.subareas.filter(
+    (s) => s.deliveryAvailable === true
+  ).length
 
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden">
+    <div className="border border-slate-200/80 rounded-2xl overflow-hidden bg-white shadow-xs transition-all hover:border-slate-300">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 px-4 py-3 bg-white">
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center justify-between gap-3 p-4 bg-white">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <button
+            type="button"
             onClick={() => setExpanded((e) => !e)}
-            className="flex items-center gap-1 text-slate-400 hover:text-slate-600"
+            className="w-8 h-8 rounded-xl bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors shrink-0"
           >
             {expanded ? (
               <ChevronUp className="w-4 h-4" />
@@ -60,17 +75,21 @@ function MainAreaCard({
             )}
           </button>
           <div className="min-w-0">
-            <div className="text-xs text-slate-400">{answer.governorateNameAr}</div>
-            <div className="font-semibold text-sm text-slate-900 truncate">
+            <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md">
+              {answer.governorateNameAr}
+            </span>
+            <div className="font-bold text-sm text-slate-900 truncate mt-1">
               {answer.mainAreaNameAr}
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+
+        <div className="flex items-center gap-2.5 shrink-0">
           <AnswerBadge available={answer.generalDeliveryAvailable} />
           <button
+            type="button"
             onClick={() => onEdit(stepIndex)}
-            className="text-xs text-sky-600 hover:text-sky-700 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-sky-50 transition-colors"
+            className="text-xs font-bold text-sky-600 hover:text-white hover:bg-sky-600 flex items-center gap-1 px-3 py-1.5 rounded-xl border border-sky-200 transition-colors"
           >
             <Pencil className="w-3 h-3" />
             تعديل
@@ -78,45 +97,47 @@ function MainAreaCard({
         </div>
       </div>
 
-      {/* Subareas — only shown if general is YES */}
+      {/* Subareas List */}
       {expanded && answer.generalDeliveryAvailable === true && (
-        <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-3 space-y-2">
-          <div className="text-xs text-slate-500 mb-2">
-            {coveredSubareas} من {answer.subareas.length} مناطق فرعية مغطاة
+        <div className="border-t border-slate-100 bg-slate-50/50 p-4 space-y-2.5 animate-fade-in">
+          <div className="text-xs font-bold text-slate-500 mb-2">
+            الأحياء المغطاة: {coveredSubareas} من {answer.subareas.length}
           </div>
-          {answer.subareas.map((sa) => (
-            <div
-              key={sa.subareaId}
-              className="flex items-center justify-between gap-2 text-xs"
-            >
-              <span className="text-slate-700">{sa.subareaNameAr}</span>
-              <div className="flex items-center gap-2 shrink-0">
-                {sa.deliveryAvailable === true && (
-                  <>
-                    {sa.deliveryFee !== undefined && (
-                      <span className="text-slate-500">
-                        {sa.deliveryFee} جنيه
+          <div className="grid grid-cols-1 gap-2">
+            {answer.subareas.map((sa) => (
+              <div
+                key={sa.subareaId}
+                className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-slate-200/60 text-xs"
+              >
+                <span className="font-semibold text-slate-800">
+                  {sa.subareaNameAr}
+                </span>
+                <div className="flex items-center gap-2.5 shrink-0">
+                  {sa.deliveryAvailable === true && (
+                    <>
+                      <span className="inline-flex items-center gap-1 font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                        <Banknote className="w-3 h-3 text-slate-400" />
+                        {sa.deliveryFee} ج.م
                       </span>
-                    )}
-                    {sa.estimatedTime !== undefined && (
-                      <span className="text-slate-500">
-                        {sa.estimatedTime} دقيقة
+                      <span className="inline-flex items-center gap-1 font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                        <Clock className="w-3 h-3 text-slate-400" />
+                        {sa.estimatedTime} د
                       </span>
-                    )}
-                  </>
-                )}
-                <AnswerBadge available={sa.deliveryAvailable} />
+                    </>
+                  )}
+                  <AnswerBadge available={sa.deliveryAvailable} />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
-      {/* General is NO — just show the skip notice */}
+      {/* General is NO */}
       {expanded && answer.generalDeliveryAvailable === false && (
-        <div className="border-t border-slate-100 bg-red-50/50 px-4 py-3">
-          <p className="text-xs text-red-500">
-            تم تخطي جميع المناطق الفرعية — التوصيل غير متاح.
+        <div className="border-t border-slate-100 bg-rose-50/30 p-4 animate-fade-in">
+          <p className="text-xs font-semibold text-rose-600">
+            تم استبعاد هذه المنطقة بالكامل من التغطية ولم يتم تضمين أي أحياء تابعة لها.
           </p>
         </div>
       )}
@@ -136,9 +157,22 @@ export default function ReviewScreen({
   const [submitted, setSubmitted] = useState(false)
 
   const totalAreas = submission.answers.length
-  const answeredAreas = submission.answers.filter(
-    (a) => a.generalDeliveryAvailable !== null
+  const coveredAreasCount = submission.answers.filter(
+    (a) => a.generalDeliveryAvailable === true
   ).length
+  const excludedAreasCount = submission.answers.filter(
+    (a) => a.generalDeliveryAvailable === false
+  ).length
+
+  // Calculate covered subareas total
+  let totalCoveredSubareas = 0
+  submission.answers.forEach((a) => {
+    if (a.generalDeliveryAvailable === true) {
+      totalCoveredSubareas += a.subareas.filter(
+        (sa) => sa.deliveryAvailable === true
+      ).length
+    }
+  })
 
   const handleSubmit = async () => {
     if (submitted) return
@@ -171,129 +205,118 @@ export default function ReviewScreen({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      {/* Top accent */}
-      <div className="h-1 bg-gradient-to-l from-sky-500 to-cyan-400" />
-
-      <div className="px-6 pt-6 pb-4">
-        {/* Title */}
-        <h2 className="text-xl font-bold text-slate-900 mb-1">
-          مراجعة الإجابات
+    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/80 overflow-hidden">
+      {/* Header */}
+      <div className="p-6 sm:p-8 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
+        <div className="flex items-center gap-2 text-xs font-bold text-sky-700 bg-sky-100 w-fit px-3 py-1 rounded-full mb-3">
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          المرحلة النهائية قبل الإرسال
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          تم الانتهاء من مراجعة مناطق التوصيل
         </h2>
-        <p className="text-slate-500 text-sm mb-5">
-          تم الإجابة على {answeredAreas} من {totalAreas} منطقة. راجع إجاباتك
-          قبل الإرسال.
+        <p className="text-sm text-slate-500 mt-2">
+          راجع ملخص مناطق التغطية والأسعار الخاصة بمطعمك قبل الاعتماد النهائي.
         </p>
+      </div>
 
-        {/* Summary strip */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          {[
-            {
-              label: 'إجمالي المناطق',
-              value: totalAreas,
-              color: 'text-slate-700',
-            },
-            {
-              label: 'متاح للتوصيل',
-              value: submission.answers.filter(
-                (a) => a.generalDeliveryAvailable === true
-              ).length,
-              color: 'text-emerald-600',
-            },
-            {
-              label: 'غير متاح',
-              value: submission.answers.filter(
-                (a) => a.generalDeliveryAvailable === false
-              ).length,
-              color: 'text-red-500',
-            },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="bg-slate-50 rounded-xl p-3 border border-slate-100 text-center"
-            >
-              <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
-              <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
+      <div className="p-6 sm:p-8">
+        {/* KPI Strip */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
+          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 text-center">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">
+              {totalAreas}
             </div>
-          ))}
+            <div className="text-xs font-bold text-slate-500 mt-1">
+              إجمالي المناطق
+            </div>
+          </div>
+
+          <div className="bg-emerald-50/70 rounded-2xl p-4 border border-emerald-200/80 text-center">
+            <div className="text-2xl sm:text-3xl font-black text-emerald-600">
+              {coveredAreasCount}
+            </div>
+            <div className="text-xs font-bold text-emerald-800 mt-1">
+              مناطق متاحة ({totalCoveredSubareas} حي)
+            </div>
+          </div>
+
+          <div className="bg-rose-50/70 rounded-2xl p-4 border border-rose-200/80 text-center">
+            <div className="text-2xl sm:text-3xl font-black text-rose-600">
+              {excludedAreasCount}
+            </div>
+            <div className="text-xs font-bold text-rose-800 mt-1">
+              مناطق غير متاحة
+            </div>
+          </div>
         </div>
 
-        {/* Areas list */}
-        <div className="space-y-2 mb-6 max-h-[50vh] overflow-y-auto pr-1">
-          {submission.answers.map((answer, i) => (
-            <MainAreaCard
-              key={answer.mainAreaId}
-              answer={answer}
-              stepIndex={i}
-              onEdit={onEdit}
-            />
-          ))}
+        {/* Detailed Areas List */}
+        <div className="mb-8">
+          <h3 className="text-sm font-extrabold text-slate-900 mb-3">
+            تفاصيل المناطق المسجلة ({submission.answers.length})
+          </h3>
+          <div className="space-y-2.5 max-h-[50vh] overflow-y-auto pr-1">
+            {submission.answers.map((answer, i) => (
+              <MainAreaCard
+                key={answer.mainAreaId}
+                answer={answer}
+                stepIndex={i}
+                onEdit={onEdit}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Missing area note */}
-        <div className="mb-6">
+        {/* Missing area note input */}
+        <div className="mb-8 p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
           <label
             htmlFor="missing-note"
-            className="block text-sm font-medium text-slate-700 mb-2"
+            className="block text-sm font-bold text-slate-900 mb-1"
           >
-            هل هناك منطقة مفقودة؟
-            <span className="text-slate-400 font-normal mr-1">(اختياري)</span>
+            هل هناك مناطق أو تجمعات سكنية مفقودة تود إضافتها؟
           </label>
+          <p className="text-xs text-slate-500 mb-3">
+            اختياري — اكتب أي أحياء أو كمبوندات أخرى ترغب في تغطيتها ولم تجدها بالقائمة.
+          </p>
           <textarea
             id="missing-note"
             value={missingAreaNote}
             onChange={(e) => onMissingAreaNoteChange(e.target.value)}
-            placeholder="اذكر المناطق التي لا تجدها في القائمة..."
-            rows={2}
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm resize-none"
+            placeholder="مثال: كمباوند كذا في الشيخ زايد، أو مربع سكني محدد..."
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm resize-none shadow-xs"
           />
         </div>
 
         {/* Error */}
         {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-red-600">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            {error}
+          <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
-        {/* Submit button */}
+        {/* Submit Button */}
         <button
+          type="button"
           onClick={handleSubmit}
           disabled={loading || submitted}
-          className={`w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold text-base transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 ${
+          className={`w-full py-4 px-6 rounded-2xl font-black text-base flex items-center justify-center gap-3 transition-all duration-200 shadow-xl cursor-pointer ${
             loading || submitted
-              ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-              : 'bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white'
+              ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+              : 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-emerald-600/25'
           }`}
         >
           {loading ? (
-            <>
-              <svg
-                className="animate-spin h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8z"
-                />
-              </svg>
-              جار الإرسال...
-            </>
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              جار حفظ وإرسال البيانات...
+            </span>
           ) : (
             <>
-              <Send className="w-4 h-4" />
-              إرسال الإجابات
+              <Send className="w-5 h-5" />
+              <span>إرسال الإجابات</span>
             </>
           )}
         </button>
@@ -301,4 +324,3 @@ export default function ReviewScreen({
     </div>
   )
 }
-

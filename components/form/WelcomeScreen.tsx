@@ -1,6 +1,6 @@
 'use client'
 
-import { MapPin, ClipboardList } from 'lucide-react'
+import { MapPin, Store, ShieldCheck, Clock, ArrowLeft, CheckCircle2 } from 'lucide-react'
 
 interface WelcomeScreenProps {
   restaurantName: string
@@ -14,81 +14,111 @@ export default function WelcomeScreen({
   onStart,
 }: WelcomeScreenProps) {
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg">
-        {/* Header card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          {/* Top accent strip */}
-          <div className="h-1.5 bg-gradient-to-l from-sky-500 to-cyan-400" />
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
+      {/* Decorative subtle background accents */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-sky-100/40 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-cyan-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
-          <div className="px-8 pt-10 pb-8">
-            {/* Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center border border-sky-100">
-                <MapPin className="w-8 h-8 text-sky-500" strokeWidth={1.5} />
-              </div>
-            </div>
+      <div className="w-full max-w-xl">
+        {/* Brand Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-sky-800 text-xs font-semibold mb-4">
+            <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+            بوابة شركاء المطاعم • مراجعة التغطية
+          </div>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            مراجعة مناطق التوصيل
+          </h1>
+          <p className="mt-3 text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+            من فضلك راجع مناطق التوصيل الخاصة بالمطعم وحدد المناطق المتاحة وأسعار ومدة التوصيل لكل منطقة بدقة.
+          </p>
+        </div>
 
-            {/* Title */}
-            <h1 className="text-2xl font-bold text-slate-900 text-center leading-snug mb-3">
-              مراجعة مناطق التوصيل
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-slate-500 text-center leading-relaxed text-sm mb-8">
-              من فضلك راجع مناطق التوصيل الخاصة بالمطعم وحدد المناطق المتاحة
-              وأسعار ومدة التوصيل لكل منطقة.
-            </p>
-
-            {/* Divider */}
-            <div className="border-t border-slate-100 mb-6" />
-
-            {/* Restaurant name input */}
-            <div className="mb-6">
-              <label
-                htmlFor="restaurant-name"
-                className="block text-sm font-medium text-slate-700 mb-2"
-              >
-                اسم المطعم
-                <span className="text-slate-400 font-normal mr-1">(اختياري)</span>
-              </label>
+        {/* Main Card */}
+        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-200/80 p-6 sm:p-8">
+          {/* Restaurant input field */}
+          <div className="mb-6">
+            <label
+              htmlFor="restaurant-name"
+              className="block text-sm font-bold text-slate-800 mb-2 flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <Store className="w-4 h-4 text-sky-600" />
+                اسم المطعم أو الفرع
+              </span>
+              <span className="text-xs font-normal text-slate-400 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                اختياري
+              </span>
+            </label>
+            <div className="relative">
               <input
                 id="restaurant-name"
                 type="text"
                 value={restaurantName}
                 onChange={(e) => onRestaurantNameChange(e.target.value)}
-                placeholder="أدخل اسم مطعمك هنا..."
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm"
+                placeholder="مثال: مطعم الشرق - فرع القاهرة"
+                className="w-full px-4 py-3.5 pr-11 rounded-2xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm transition-all shadow-sm"
               />
+              <Store className="w-5 h-5 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
+          </div>
 
-            {/* Info pills */}
-            <div className="bg-sky-50 rounded-xl px-5 py-4 mb-7 border border-sky-100">
-              <div className="flex items-start gap-3">
-                <ClipboardList className="w-4 h-4 text-sky-500 mt-0.5 shrink-0" strokeWidth={1.5} />
-                <div className="text-sky-700 text-xs leading-relaxed">
-                  ستظهر لك كل منطقة على حدة. بإمكانك التنقل بين المناطق بحرية
-                  ومراجعة إجاباتك قبل الإرسال.
-                </div>
+          {/* Quick Features Highlight */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+              <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center shrink-0">
+                <MapPin className="w-4 h-4 text-sky-600" />
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-bold text-slate-800">تغطية ذكية</div>
+                <div className="text-[11px] text-slate-500">القاهرة والجيزة</div>
               </div>
             </div>
 
-            {/* CTA Button */}
-            <button
-              onClick={onStart}
-              className="w-full bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white font-semibold py-3.5 px-6 rounded-xl text-base transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            >
-              ابدأ المراجعة
-            </button>
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+              <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-bold text-slate-800">حفظ تلقائي</div>
+                <div className="text-[11px] text-slate-500">عدم فقدان البيانات</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+              <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                <Clock className="w-4 h-4 text-amber-600" />
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-bold text-slate-800">وقت التوصيل</div>
+                <div className="text-[11px] text-slate-500">تحديد مدة وسعر</div>
+              </div>
+            </div>
           </div>
+
+          {/* Instructions note */}
+          <div className="flex items-start gap-3 p-4 rounded-2xl bg-sky-50/60 border border-sky-100 text-sky-900 text-xs leading-relaxed mb-6">
+            <CheckCircle2 className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+            <p>
+              سيتم عرض كل منطقة رئيسية على حدة. في حال عدم التوصيل لمنطقة رئيسية، سيتم تخطي كافة تفرعاتها تلقائياً لتوفير وقتك.
+            </p>
+          </div>
+
+          {/* CTA Button */}
+          <button
+            onClick={onStart}
+            className="w-full group bg-slate-900 hover:bg-sky-600 active:bg-sky-700 text-white font-bold py-4 px-6 rounded-2xl text-base transition-all duration-200 shadow-lg shadow-slate-900/10 hover:shadow-sky-500/25 flex items-center justify-center gap-3 cursor-pointer"
+          >
+            <span>ابدأ المراجعة الآن</span>
+            <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+          </button>
         </div>
 
-        {/* Footer note */}
-        <p className="text-center text-slate-400 text-xs mt-6">
-          جميع المعلومات المُدخلة تُستخدم لتحسين خدمة التوصيل فقط
+        {/* Footer */}
+        <p className="text-center text-xs text-slate-400 mt-6">
+          جميع البيانات مشفرة وتُستخدم لضبط تسعير وتغطية أسطول التوصيل الخاص بكم.
         </p>
       </div>
     </div>
   )
 }
-
